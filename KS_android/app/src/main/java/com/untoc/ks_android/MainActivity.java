@@ -37,7 +37,7 @@ public class MainActivity extends Activity {
     TextView textview;
     Document doc = null;
 
-    private Button noti_btn;
+    private Button noti_btn, bt_btn;
     private String urlStr;
     Boolean isGPSEnabled, isNetworkEnabled;
 
@@ -108,11 +108,20 @@ public class MainActivity extends Activity {
         });
 
         noti_btn = (Button)findViewById(R.id.noti_service);
+        bt_btn = (Button)findViewById(R.id.bt_btn);
 
         noti_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, BackGround.class);
+                startActivity(intent);
+            }
+        });
+
+        bt_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, Bluetooth.class);
                 startActivity(intent);
             }
         });

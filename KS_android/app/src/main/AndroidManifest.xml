@@ -33,7 +33,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".BackGround" />
-
+        <activity android:name=".Bluetooth"/>
         <service
             android:name=".MyService"
             android:enabled="true"
