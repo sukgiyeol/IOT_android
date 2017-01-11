@@ -41,7 +41,7 @@ public class MyDialogFragment extends DialogFragment{
                 alertDialogBuilder = new AlertDialog.Builder(getActivity());
                 alertDialogBuilder.setTitle("Select device");
 
-                Set<BluetoothDevice> pairedDevices = Bluetooth.getPairedDevices();
+                Set<BluetoothDevice> pairedDevices = MainActivity.getPairedDevices();
                 final BluetoothDevice[] devices = pairedDevices.toArray(new BluetoothDevice[0]);
                 String[] items = new String[devices.length];
                 for (int i=0;i<devices.length;i++) {
@@ -52,7 +52,7 @@ public class MyDialogFragment extends DialogFragment{
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        ((Bluetooth)Bluetooth.mContext).doConnect(devices[which]);
+                        ((MainActivity)MainActivity.mContext).doConnect(devices[which]);
                     }
                 });
                 alertDialogBuilder.setCancelable(false);
@@ -67,7 +67,7 @@ public class MyDialogFragment extends DialogFragment{
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        ((Bluetooth)Bluetooth.mContext).finish();
+                        ((MainActivity)MainActivity.mContext).finish();
                     }
                 });
                 break;

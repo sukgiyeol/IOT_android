@@ -48,11 +48,12 @@ public class MyService extends Service {
                     .setSmallIcon(R.drawable.notification_template_icon_bg)
                     .setTicker("알림!!!")
                     .setContentIntent(pendingIntent)
+                    .setDefaults(Notification.DEFAULT_VIBRATE)
                     .build();
             notificationManager.notify( 777 , notification);
 
             //토스트 띄우기
-            Toast.makeText(MyService.this, "뜸?", Toast.LENGTH_LONG).show();
+            Toast.makeText(MyService.this, "뜸?", Toast.LENGTH_SHORT).show();
         }
     };
 }
