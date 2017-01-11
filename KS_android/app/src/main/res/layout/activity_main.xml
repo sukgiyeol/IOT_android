@@ -53,4 +53,9 @@
         android:id="@+id/tvWeather"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="알림 설정"
+        android:id="@+id/noti_service"/>
 </LinearLayout>

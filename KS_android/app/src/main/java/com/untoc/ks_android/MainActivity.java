@@ -2,6 +2,7 @@ package com.untoc.ks_android;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -36,6 +37,7 @@ public class MainActivity extends Activity {
     TextView textview;
     Document doc = null;
 
+    private Button noti_btn;
     private String urlStr;
     Boolean isGPSEnabled, isNetworkEnabled;
 
@@ -105,6 +107,15 @@ public class MainActivity extends Activity {
             }
         });
 
+        noti_btn = (Button)findViewById(R.id.noti_service);
+
+        noti_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, BackGround.class);
+                startActivity(intent);
+            }
+        });
     }
     public void GetLocations() {
         // 텍스트뷰를 찾음
