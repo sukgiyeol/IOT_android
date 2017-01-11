@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -17,10 +18,11 @@ import android.os.Looper;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,8 +45,15 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 public class MainActivity extends AppCompatActivity {
+    private LinearLayout container;
     private WebView mWebView;
-    TextView textview;
+    private TextView weatherview;
+    private TextView jusoText;
+    private ImageView WeaterimageView;
+    private Button captureButton;
+    public static  Bitmap bit;
+
+
     Document doc = null;
 
     private String urlStr;
@@ -78,17 +87,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(com.untoc.ks_android.R.layout.activity_main);
+        setContentView(R.layout.activity_main);
 
         Log.d("Main", "onCreate");
 
+        container = (LinearLayout)findViewById(R.id.main_container);
         mWebView = (WebView) findViewById(R.id.webView);
-        textview = (TextView) findViewById(R.id.tvWeather);
+        weatherview = (TextView) findViewById(R.id.tvWeather);
+        WeaterimageView = (ImageView) findViewById(R.id.imageView);
+//        captureButton = (Button)findViewById(R.id.main_capture);
 
         // 웹뷰에서 자바스크립트실행가능
         mWebView.getSettings().setJavaScriptEnabled(true);
         // 주소 지정
-        mWebView.loadUrl("https://youtu.be/HKFDrBzarAs");
+        mWebView.loadUrl("http://192.168.43.31:8080/?action=stream");
         // WebViewClient 지정
         mWebView.setWebViewClient(new WebViewClientClass());
 
@@ -101,8 +113,7 @@ public class MainActivity extends AppCompatActivity {
         if (!bluetoothAdapter.isEnabled()) {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-            finish();
-            return;
+            DeviceDialog();
         }
 
         if (bluetoothAdapter == null) {
@@ -124,6 +135,8 @@ public class MainActivity extends AppCompatActivity {
         Log.d("Main", "isGPSEnabled=" + isGPSEnabled);
         Log.d("Main", "isNetworkEnabled=" + isNetworkEnabled);
 
+        jusoText = (TextView) findViewById(R.id.tvAddress);
+        jusoText.setText(String.valueOf("GPS 수신중..."));
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 myLocation = location;
@@ -147,19 +160,45 @@ public class MainActivity extends AppCompatActivity {
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000, 0, locationListener);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 0, locationListener);
 
-        final Button gpsButton = (Button) findViewById(com.untoc.ks_android.R.id.gpsButton);
-        gpsButton.setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                GetLocations();
-                Log.d("location", "button pressed");
-            }
-        });
+//        captureButton.setOnClickListener(new View.OnClickListener() { // 캡쳐 픽셀분석
+//            @Override
+//            public void onClick(View v) {
+//                container.buildDrawingCache();
+//                container.setDrawingCacheEnabled(true);
+//                bit = container.getDrawingCache();
+//                int [][] pixels = new int [bit.getHeight()][bit.getWidth()];
+//                Toast.makeText(getApplicationContext(),bit.getHeight()+"   "+bit.getWidth() ,Toast.LENGTH_SHORT).show();
+////                for(int i=2400; i<bit.getHeight(); i++) {
+////                    for(int j=1400; j<bit.getWidth();j++)
+////                    {
+//                int i = 2400;
+//                int j = 1400;
+//                        pixels[2400][1400]=bit.getPixel(j,i);
+//                        int red= (pixels[i][j]&0xff0000)/0x10000;
+//                        int green= (pixels[i][j]&0xff00)/0x100;
+//                        int blue= pixels[i][j]&0xff;
+//                Toast.makeText(getApplicationContext(),red+"   "+green+"   "+ blue ,Toast.LENGTH_SHORT).show();
+//                        if (blue>102 && red<102 && green<102){
+//                            Toast.makeText(getApplicationContext(),"블루가나옴",Toast.LENGTH_SHORT).show();
+////                        }
+////                    }
+//                }
+//            }
+//        });
+
+
+//        final Button gpsButton = (Button) findViewById(com.untoc.ks_android.R.id.gpsButton);
+//        gpsButton.setOnClickListener(new Button.OnClickListener() {
+//            public void onClick(View v) {
+//                GetLocations();
+//                Log.d("location", "button pressed");
+//            }
+//        });
     }
+
     public void GetLocations() {
         // 텍스트뷰를 찾음
-        TextView latText = (TextView) findViewById(com.untoc.ks_android.R.id.tvLatitude);
-        TextView lngText = (TextView) findViewById(com.untoc.ks_android.R.id.tvLongitude);
-        TextView jusoText = (TextView) findViewById(com.untoc.ks_android.R.id.tvAddress);
+        TextView latText = (TextView) findViewById(R.id.tvLatitude);
         StringBuffer juso = new StringBuffer();
 
         if (myLocation != null) {
@@ -183,12 +222,9 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            latText.setText(String.valueOf(latPoint));
-            lngText.setText(String.valueOf(lngPoint));
+            latText.setText(" [ " + String.valueOf(Double.parseDouble(String.format("%.3f",latPoint))) +"  ,  " + Double.parseDouble(String.format("%.3f",lngPoint)) + " ] ");
+//            lngText.setText(String.valueOf("y : " + Double.parseDouble(String.format("%.3f",lngPoint))));
             jusoText.setText(String.valueOf(juso));
-        }
-        else{// 위치정보 null 일때
-            jusoText.setText(String.valueOf("수신중..."));
         }
     }
 
@@ -226,13 +262,30 @@ public class MainActivity extends AppCompatActivity {
                 NodeList nameList  = fstElmnt.getElementsByTagName("temp");
                 Element nameElement = (Element) nameList.item(0);
                 nameList = nameElement.getChildNodes();
-                s += "온도 = "+ ((Node) nameList.item(0)).getNodeValue() +" ,";
+                s += "현재 날씨는   " + ((Node) nameList.item(0)).getNodeValue() + "c";
 
                 NodeList websiteList = fstElmnt.getElementsByTagName("wfKor");
                 //<wfKor>맑음</wfKor> =====> <wfKor> 태그의 첫번째 자식노드는 TextNode 이고 TextNode의 값은 맑음
-                s += "날씨 = "+  websiteList.item(0).getChildNodes().item(0).getNodeValue() +"\n";
+//                s += "날씨 = "+  websiteList.item(0).getChildNodes().item(0).getNodeValue() +"\n";
 //            }
-            textview.setText(s);
+            String weather = websiteList.item(0).getChildNodes().item(0).getNodeValue();
+
+            if (weather.equals("맑음")){
+                WeaterimageView.setImageResource(R.drawable.sun);}
+            else if(weather.equals("구름 조금")){
+                WeaterimageView.setImageResource(R.drawable.fewcloud);}
+            else if(weather.equals("구름 많이")){
+                WeaterimageView.setImageResource(R.drawable.manycloud);}
+            else if(weather.equals("흐림")){
+                WeaterimageView.setImageResource(R.drawable.cloud);}
+            else if(weather.equals("비")){
+                WeaterimageView.setImageResource(R.drawable.rain);}
+            else if(weather.equals("눈/비")){
+                WeaterimageView.setImageResource(R.drawable.snowandrain);}
+            else if(weather.equals("눈")){
+                WeaterimageView.setImageResource(R.drawable.snow);}
+
+            weatherview.setText(s);
             super.onPostExecute(doc);
         }
     }//end inner class - GetXMLTask
@@ -244,6 +297,13 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
     }
+
+
+
+
+
+    //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 블루투스 part ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
 
     static public Set<BluetoothDevice> getPairedDevices() {
         return bluetoothAdapter.getBondedDevices();
@@ -268,7 +328,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void doClose() {
-        workerThread.interrupt();
+        if (workerThread != null)
+            workerThread.interrupt();
         new CloseTask().execute();
     }
 
@@ -335,17 +396,17 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.show(fm, "");
     }
 
-    /*void sendData() throws IOException
+    void sendData() throws IOException
     {
-        String msg = myTextbox.getText().toString();
-        if ( msg.length() == 0 ) return;
-
-        msg += "\n";
-        Log.d(msg, msg);
-        mmOutputStream.write(msg.getBytes());
-        myLabel.setText("Data Sent");
-        myTextbox.setText(" ");
-    }*/
+//        String msg = myTextbox.getText().toString();
+//        if ( msg.length() == 0 ) return;
+//
+//        msg += "\n";
+//        Log.d(msg, msg);
+//        outputStream.write(msg.getBytes());
+//        myLabel.setText("Data Sent");
+//        myTextbox.setText(" ");
+    }
 
 
     void beginListenForData() {
@@ -360,8 +421,10 @@ public class MainActivity extends AppCompatActivity {
                     try{
                         int bytesAvailable = inputStream.available();
                         if(bytesAvailable > 0){
+                            //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 서비스 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
                             Intent intent = new Intent(MainActivity.this, MyService.class);
                             startService(intent);
+                            //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 서비스 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
                             byte[] packetBytes = new byte[bytesAvailable];
                             inputStream.read(packetBytes);
                             for(int i=0; i<bytesAvailable; i++){
@@ -393,3 +456,4 @@ public class MainActivity extends AppCompatActivity {
         workerThread.start();
     }
 }
+//ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 블루투스 part ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
