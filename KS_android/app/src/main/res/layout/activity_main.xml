@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/editText"
+        android:padding="5dp"
         android:textSize="25dp"
         android:textColor="#000000"
         android:text=" RealTime Player"/>
@@ -56,6 +57,45 @@
             android:id="@+id/imageView"/>
     </LinearLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/upBt"
+            android:background="@drawable/up"
+            android:layout_marginTop="15dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/leftBt"
+            android:background="@drawable/left"
+            android:layout_alignTop="@+id/stopBt"
+            android:layout_toStartOf="@+id/stopBt"
+            android:layout_marginEnd="20dp" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/rightBt"
+            android:background="@drawable/right"
+            android:layout_alignTop="@+id/stopBt"
+            android:layout_toEndOf="@+id/stopBt"
+            android:layout_marginStart="20dp" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/stopBt"
+            android:background="@drawable/stop"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
     <!--<Button-->
         <!--android:layout_width="wrap_content"-->
         <!--android:layout_height="wrap_content"-->

@@ -18,9 +18,11 @@ import android.os.Looper;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -52,6 +54,11 @@ public class MainActivity extends AppCompatActivity {
     private ImageView WeaterimageView;
     private Button captureButton;
     public static  Bitmap bit;
+    private ImageButton upBt;
+    private ImageButton leftBt;
+    private ImageButton rightBt;
+    private ImageButton stopBt;
+
 
 
     Document doc = null;
@@ -96,7 +103,11 @@ public class MainActivity extends AppCompatActivity {
         weatherview = (TextView) findViewById(R.id.tvWeather);
         WeaterimageView = (ImageView) findViewById(R.id.imageView);
 //        captureButton = (Button)findViewById(R.id.main_capture);
-
+        upBt = (ImageButton) findViewById(R.id.upBt);
+        leftBt = (ImageButton) findViewById(R.id.leftBt);
+        rightBt = (ImageButton) findViewById(R.id.rightBt);
+        stopBt = (ImageButton) findViewById(R.id.stopBt);
+        
         // 웹뷰에서 자바스크립트실행가능
         mWebView.getSettings().setJavaScriptEnabled(true);
         // 주소 지정
@@ -113,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
         if (!bluetoothAdapter.isEnabled()) {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-            DeviceDialog();
         }
 
         if (bluetoothAdapter == null) {
@@ -160,6 +170,46 @@ public class MainActivity extends AppCompatActivity {
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000, 0, locationListener);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 0, locationListener);
 
+        upBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    sendData("u");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        leftBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    sendData("l");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        rightBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    sendData("r");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        stopBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    sendData("s");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 //        captureButton.setOnClickListener(new View.OnClickListener() { // 캡쳐 픽셀분석
 //            @Override
 //            public void onClick(View v) {
@@ -217,7 +267,6 @@ public class MainActivity extends AppCompatActivity {
                         juso.append(addr.getAddressLine(i));
                         juso.append(" ");
                     }
-//                    juso.append("\n");
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -274,7 +323,7 @@ public class MainActivity extends AppCompatActivity {
                 WeaterimageView.setImageResource(R.drawable.sun);}
             else if(weather.equals("구름 조금")){
                 WeaterimageView.setImageResource(R.drawable.fewcloud);}
-            else if(weather.equals("구름 많이")){
+            else if(weather.equals("구름 많음")){
                 WeaterimageView.setImageResource(R.drawable.manycloud);}
             else if(weather.equals("흐림")){
                 WeaterimageView.setImageResource(R.drawable.cloud);}
@@ -284,6 +333,8 @@ public class MainActivity extends AppCompatActivity {
                 WeaterimageView.setImageResource(R.drawable.snowandrain);}
             else if(weather.equals("눈")){
                 WeaterimageView.setImageResource(R.drawable.snow);}
+            else{
+                WeaterimageView.setImageResource(R.drawable.manycloud);}
 
             weatherview.setText(s);
             super.onPostExecute(doc);
@@ -396,14 +447,15 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.show(fm, "");
     }
 
-    void sendData() throws IOException
+    void sendData(String msg) throws IOException
     {
 //        String msg = myTextbox.getText().toString();
-//        if ( msg.length() == 0 ) return;
+        if ( msg.length() == 0 ) return;
 //
-//        msg += "\n";
+        msg += "\n";
 //        Log.d(msg, msg);
-//        outputStream.write(msg.getBytes());
+        if (outputStream != null)
+            outputStream.write(msg.getBytes());
 //        myLabel.setText("Data Sent");
 //        myTextbox.setText(" ");
     }
