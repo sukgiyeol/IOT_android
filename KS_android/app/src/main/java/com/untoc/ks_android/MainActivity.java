@@ -21,10 +21,11 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,12 +53,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView weatherview;
     private TextView jusoText;
     private ImageView WeaterimageView;
-    private Button captureButton;
     public static  Bitmap bit;
     private ImageButton upBt;
     private ImageButton leftBt;
     private ImageButton rightBt;
     private ImageButton stopBt;
+    private Switch swc;
 
 
 
@@ -102,16 +103,16 @@ public class MainActivity extends AppCompatActivity {
         mWebView = (WebView) findViewById(R.id.webView);
         weatherview = (TextView) findViewById(R.id.tvWeather);
         WeaterimageView = (ImageView) findViewById(R.id.imageView);
-//        captureButton = (Button)findViewById(R.id.main_capture);
         upBt = (ImageButton) findViewById(R.id.upBt);
         leftBt = (ImageButton) findViewById(R.id.leftBt);
         rightBt = (ImageButton) findViewById(R.id.rightBt);
         stopBt = (ImageButton) findViewById(R.id.stopBt);
+        swc = (Switch) findViewById(R.id.modeSwitch);
         
         // 웹뷰에서 자바스크립트실행가능
         mWebView.getSettings().setJavaScriptEnabled(true);
         // 주소 지정
-        mWebView.loadUrl("http://192.168.43.31:8080/?action=stream");
+        mWebView.loadUrl("http://192.168.43.31:8220/?action=stream");
         // WebViewClient 지정
         mWebView.setWebViewClient(new WebViewClientClass());
 
@@ -154,21 +155,37 @@ public class MainActivity extends AppCompatActivity {
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
-//                logView.setText("onStatusChanged");
             }
 
             public void onProviderEnabled(String provider) {
-//                logView.setText("onProviderEnabled");
             }
 
             public void onProviderDisabled(String provider) {
-//                logView.setText("onProviderDisabled");
             }
         };
 
         // Register the listener with the Location Manager to receive location updates
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000, 0, locationListener);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 0, locationListener);
+
+        swc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() { // swich action
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    try {
+                        sendData("a");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        sendData("m");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
 
         upBt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -210,40 +227,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-//        captureButton.setOnClickListener(new View.OnClickListener() { // 캡쳐 픽셀분석
-//            @Override
-//            public void onClick(View v) {
-//                container.buildDrawingCache();
-//                container.setDrawingCacheEnabled(true);
-//                bit = container.getDrawingCache();
-//                int [][] pixels = new int [bit.getHeight()][bit.getWidth()];
-//                Toast.makeText(getApplicationContext(),bit.getHeight()+"   "+bit.getWidth() ,Toast.LENGTH_SHORT).show();
-////                for(int i=2400; i<bit.getHeight(); i++) {
-////                    for(int j=1400; j<bit.getWidth();j++)
-////                    {
-//                int i = 2400;
-//                int j = 1400;
-//                        pixels[2400][1400]=bit.getPixel(j,i);
-//                        int red= (pixels[i][j]&0xff0000)/0x10000;
-//                        int green= (pixels[i][j]&0xff00)/0x100;
-//                        int blue= pixels[i][j]&0xff;
-//                Toast.makeText(getApplicationContext(),red+"   "+green+"   "+ blue ,Toast.LENGTH_SHORT).show();
-//                        if (blue>102 && red<102 && green<102){
-//                            Toast.makeText(getApplicationContext(),"블루가나옴",Toast.LENGTH_SHORT).show();
-////                        }
-////                    }
-//                }
-//            }
-//        });
 
-
-//        final Button gpsButton = (Button) findViewById(com.untoc.ks_android.R.id.gpsButton);
-//        gpsButton.setOnClickListener(new Button.OnClickListener() {
-//            public void onClick(View v) {
-//                GetLocations();
-//                Log.d("location", "button pressed");
-//            }
-//        });
     }
 
     public void GetLocations() {
@@ -272,7 +256,6 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             latText.setText(" [ " + String.valueOf(Double.parseDouble(String.format("%.3f",latPoint))) +"  ,  " + Double.parseDouble(String.format("%.3f",lngPoint)) + " ] ");
-//            lngText.setText(String.valueOf("y : " + Double.parseDouble(String.format("%.3f",lngPoint))));
             jusoText.setText(String.valueOf(juso));
         }
     }
